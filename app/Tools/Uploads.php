@@ -129,10 +129,15 @@ class Uploads extends Controller{
 
         $realfile = $returnPath.'/'.$filename.'.'.$ext;
 
+        // 判断是否使用OSS
+        if(!env("APP_OSS")){
+            $appUrl = env("APP_URL");
+        }
+
         if(isset($is_thumb)){
-            $this->data['thumb_path'] = $realfile;
+            $this->data['thumb_path'] = $appUrl.$realfile;
         }else{
-             $this->data['path'] = $realfile;
+             $this->data['path'] = $appUrl.$realfile;
         }
 
         $this->data['status'] = true;
@@ -140,6 +145,17 @@ class Uploads extends Controller{
 
         return $this->data;
 
+    }
+
+
+    // 头像
+    public function avatar($data = []){
+        $data['is_thumb'] = true;
+        $data['width'] = 80;
+        $data['height'] = 80;
+        $uploadInfo = $this->uploads($data);
+        
+        return $uploadInfo['thumb_path'];
     }
 
 }

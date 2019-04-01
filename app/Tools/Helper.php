@@ -52,7 +52,7 @@ function curl($url, $params = false, $ispost = 0, $https = 0)
 function getTree($data,$pid=0,$lev=0){
     static $arr = array();
     foreach($data as $v){
-        if($v['parent_id']==$pid){
+        if($v['pid']==$pid){
             $v['lev'] = $lev;
             $arr[] = $v;
             getTree($data,$v['id'],$lev+1);

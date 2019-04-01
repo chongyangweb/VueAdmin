@@ -14,7 +14,7 @@ class CatController extends BaseController
         $cat = $cat->with(['get_parent_name'=>function($q){
             $q->select('id','name')->withDefault(['name'=>'【顶级栏目】']);
         }]);
-        $data['data'] = $this->getData($cat);
+        $data['data'] = getTree($this->getData($cat));
         $data['page'] = $this->getPage('Cat');
         return $data;
     }
@@ -49,7 +49,7 @@ class CatController extends BaseController
         $data['icon'] = is_null($req->icon)?'':$data['icon'];
         $data['sort'] = is_null($req->sort)?'':$data['sort'];
 		$rs = $cat->where('id',$id)->update($data);
-		return $this->returnData($rs);
+		return $this->returnData(true);
     }
 
     public function del(Request $req,Cat $cat){
