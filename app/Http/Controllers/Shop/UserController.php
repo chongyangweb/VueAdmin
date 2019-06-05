@@ -180,9 +180,9 @@ class UserController extends BaseController
     // 注册
     public function getRegister(Request $req,User $user,Setting $setting){
         $settingData = $setting->where('name','register')->first();
-        $code = $this->sendSms('15073010917');
-        var_dump($code);
-        // Mail::to('364825702@qq.com')->send(new UserRegister());
+        // $code = $this->sendSms('15073010917');
+        // dd($code);
+        // // Mail::to('364825702@qq.com')->send(new UserRegister());
         return $settingData;
     }
 
@@ -195,6 +195,8 @@ class UserController extends BaseController
             // 发送电话
             $phone = $req->phone;
             $code = $this->sendSms($phone);
+            session('registerCode', $code);
+            return $this->successMsg();
         }
 
 
@@ -232,18 +234,20 @@ class UserController extends BaseController
         $easySms = new EasySms($configs);
         
         $rand = mt_rand(10000,99999);
-
-        $rs = $easySms->send($phone, [
-            // 'content'  => $rand,
-            'template' => 'SMS_166476835',
-            'data' => [
-                'code' => $rand
-            ],
-        ]);
-
+        try {
+            $rs = $easySms->send($phone, [
+                // 'content'  => $rand,
+                'template' => 'SMS_166476835',
+                'data' => [
+                    'code' => $rand
+                ],
+            ], ['aliyun']);
+        } catch (\Exception $e) {
+            return $e->getExceptions();
+        }
+        
         return $rand;
-
     }
-
+    
 
 }

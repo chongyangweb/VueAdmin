@@ -202,6 +202,7 @@ Route::namespace('Shop')->prefix('Shop')->group(function(){
 	Route::match(['get','post'],'/editUserInfo','UserController@editUserInfo'); // 修改用户信息
 	Route::match(['get','post'],'/editPassword','UserController@editPassword'); // 修改密码
 	Route::get('/getRegister','UserController@getRegister'); // 注册前
+	Route::post('/postRegister','UserController@postRegister'); // 注册后
 
 	// 购物地址
 	Route::post('/addGoodsAddress','GoodsAddressController@addGoodsAddress'); //添加
