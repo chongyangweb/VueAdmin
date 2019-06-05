@@ -52,9 +52,12 @@ class LoginController extends BaseController
     		return ['code'=>500,'message'=>'无Token'];
     	}
 
+        $data = $this->respondWithToken($req->token);
     	if(JWTAuth::parseToken()->check()){
-    		return ['code'=>200,'message'=>'有效Token'];
-    	}
+    		return ['code'=>200,'message'=>'有效Token','data'=>$data];
+    	}else{
+            return ['code'=>500,'message'=>'非法Token','data'=>$data];
+        }
     }
 
     /**

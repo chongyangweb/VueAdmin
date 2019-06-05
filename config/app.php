@@ -162,6 +162,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class, // 图片上传
+        Yansongda\LaravelPay\PayServiceProvider::class, // 支付
 
         /*
          * Package Service Providers...
@@ -230,6 +231,7 @@ return [
         // 添加以下两行 JWT
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Pay' => Yansongda\LaravelPay\Facades\Pay::class, // 支付
 
     ],
 

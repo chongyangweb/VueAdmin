@@ -80,7 +80,7 @@ class BaseController extends Controller
     		}
     	}
 
-    	file_put_contents(getcwd().'/huanggao.txt', $tableObj);
+    	// file_put_contents(getcwd().'/huanggao.txt', $tableObj);
     	$data['count'] = $tableObj->count();
     	$data['page'] = (int)$this->page;
     	$data['limit'] = (int)$this->limit;
@@ -96,6 +96,14 @@ class BaseController extends Controller
     	}else{
     		return response($msg.' fail',$code);
     	}
+    }
+
+    public function isEmpty($data){
+        if(is_null($data) || empty($data)){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     // 获取控制器名字和方法

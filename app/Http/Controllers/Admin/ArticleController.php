@@ -82,8 +82,8 @@ class ArticleController extends BaseController
 
     public function thumb(Request $req,Uploads $uploads){
     	$data['is_thumb'] = true;
-        $data['width'] = 250;
-        $data['height'] = 250;
+        $data['width'] = 400;
+        $data['height'] = 280;
     	$fileInfo = $uploads->uploads($data);
         return $fileInfo;
     }

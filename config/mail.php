@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+    'host' => env('MAIL_HOST', 'smtp.qq.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return [
     |
     */
 
-    'port' => env('MAIL_PORT', 587),
+    'port' => env('MAIL_PORT', 25),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'mxyjw@vip.qq.com'),
+        'name' => env('MAIL_FROM_NAME', '青梧信息科技有限公司'),
     ],
 
     /*
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME'),
+    'username' => env('mxyjw@vip.qq.com'),
 
-    'password' => env('MAIL_PASSWORD'),
+    'password' => env('uruxtiwmzzefbhcf'),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,5 +132,22 @@ return [
     */
 
     'log_channel' => env('MAIL_LOG_CHANNEL'),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SMTP Server stream context options
+    |--------------------------------------------------------------------------
+    |
+    | This is an array that determines the stream context options and parameters.
+    |
+    */
+    'stream'    => [
+        'ssl' => [
+            'verify_peer' => false
+        ],
+    ],
+
+
 
 ];

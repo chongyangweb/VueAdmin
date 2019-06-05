@@ -61,11 +61,11 @@ class Uploads extends Controller{
         }
 
         if (!file_exists($filepath)) {
-            mkdir($filepath, 666, true);
+            mkdir($filepath,  0777, true);
         }
 
         // 保存文件全路径
-        $file = $filepath.'\\'.$filename.'.'.$ext;
+        $file = $filepath.'/'.$filename.'.'.$ext;
 
         // 文件资源
         $fileres = Input::file($name);

@@ -34,6 +34,7 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/login', 'LoginController@login');
 	Route::get('/logout', 'LoginController@logout');
 	Route::post('/checkUser', 'LoginController@checkUser');
+	Route::get('/refresh', 'LoginController@refresh'); // 刷新token
 
 	// 栏目
 	Route::get('/cat/add', 'CatController@add');
@@ -69,6 +70,10 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::match(['get','post'],'/setting/index','SettingController@index');
 	Route::match(['options','post'],'/setting/upload_logo', 'SettingController@upload_logo');
 
+	// 配置信息 如微信App_id 等
+	Route::post('/config/getConfig','ConfigController@getConfig');
+	Route::post('/config/editConfig','ConfigController@editConfig');
+
 	// 文章产品专题栏目
 	Route::match(['get','post'],'/columns/add/{is_type?}', 'ColumnsController@add')->where('is_type', '[0-9]+');
 	Route::post('/columns/del', 'ColumnsController@del');
@@ -95,4 +100,134 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::match(['get','post'],'/seminar/edit/{id}', 'SeminarController@edit');
 	Route::post('/seminar/index', 'SeminarController@index');
 	Route::match(['options','post'],'/seminar/thumb', 'SeminarController@thumb');
+
+	// 商品管理
+	Route::match(['get','post'],'/goods/add', 'GoodsController@add');
+	Route::post('/goods/del', 'GoodsController@del');
+	Route::match(['get','post'],'/goods/edit/{id}', 'GoodsController@edit');
+	Route::post('/goods/index', 'GoodsController@index');
+	Route::match(['OPTIONS','post'],'/goods/thumb', 'GoodsController@thumb');
+
+	// 商品属性添加
+	Route::post('/goods_attr/add', 'GoodsAttrController@add');
+	Route::post('/goods_spec/add', 'GoodsSpecController@add');// SKU添加
+	Route::post('/goods_spec/edit', 'GoodsSpecController@edit');// SKU修改
+	Route::get('/goods_spec/goods_spec_del/{id}', 'GoodsSpecController@goods_spec_del');
+	Route::get('/goods_attr/goods_attr_del/{id}', 'GoodsAttrController@goods_attr_del');
+
+	// 商品栏目
+	Route::match(['get','post'],'/goods_cat/add', 'GoodsCatController@add');
+	Route::post('/goods_cat/del', 'GoodsCatController@del');
+	Route::match(['get','post'],'/goods_cat/edit/{id}', 'GoodsCatController@edit');
+	Route::post('/goods_cat/index', 'GoodsCatController@index');
+	Route::match(['options','post'],'/goods_cat/thumb', 'GoodsCatController@thumb');
+
+	// 商品品牌
+	Route::match(['get','post'],'/goods_brand/add', 'GoodsBrandController@add');
+	Route::post('/goods_brand/del', 'GoodsBrandController@del');
+	Route::match(['get','post'],'/goods_brand/edit/{id}', 'GoodsBrandController@edit');
+	Route::post('/goods_brand/index', 'GoodsBrandController@index');
+	Route::match(['OPTIONS','post'],'/goods_brand/thumb', 'GoodsBrandController@thumb');
+
+	// 店铺幻灯片
+	Route::match(['get','post'],'/goods_slide/add', 'GoodsSlideController@add');
+	Route::post('/goods_slide/del', 'GoodsSlideController@del');
+	Route::match(['get','post'],'/goods_slide/edit/{id}', 'GoodsSlideController@edit');
+	Route::post('/goods_slide/index', 'GoodsSlideController@index');
+	Route::match(['options','post'],'/goods_slide/slide', 'GoodsSlideController@slide');
+
+	// 订单
+	Route::post('/order/index', 'OrderController@index');
+	Route::post('/order/getOrderInfo', 'OrderController@getOrderInfo');
+
+	// 售后服务内容
+	Route::match(['get','post'],'/goods_server/edit', 'GoodsServerController@edit');
+
+	//  商品评论
+	Route::post('/goods_comment/index', 'GoodsCommentController@index');
+	Route::post('/goods_comment/recGoodsComment', 'GoodsCommentController@recGoodsComment');
+
+	// 微信公众号
+	Route::match(['get','post'],'/wechat_cat/add', 'WechatCatController@add');
+	Route::post('/wechat_cat/del', 'WechatCatController@del');
+	Route::match(['get','post'],'/wechat_cat/edit/{id}', 'WechatCatController@edit');
+	Route::post('/wechat_cat/index', 'WechatCatController@index');
+	Route::get('/wechat_cat/push_wechat_cat', 'WechatCatController@push_wechat_cat'); // 推送到微信服务器
+
+
+});
+
+// 前端接口
+
+Route::namespace('Home')->group(function(){
+	Route::get('/index','IndexController@index');
+	Route::get('/getSetting','IndexController@getSetting');
+
+	Route::get('/article/getArticle/{id}','ArticleController@getArticle');
+	Route::match(['get','post'],'/article/index','ArticleController@index');
+
+	Route::get('/product/getProduct/{id}','ProductController@getProduct');
+	Route::match(['get','post'],'/product/index','ProductController@index');
+});
+
+// 商城前端
+
+Route::namespace('Shop')->prefix('Shop')->group(function(){
+	Route::get('/getGoodsCat','IndexController@getGoodsCat'); // 获取栏目
+	Route::get('/getBanner','IndexController@getBanner'); // 获取幻灯片
+	Route::get('/getIndexGoods','IndexController@getIndexGoods'); // 获取热门产品
+	Route::get('/getIndexCat','IndexController@getIndexCat'); // 获取首页栏目
+	Route::match(['get','post'],'/getGoodsList','GoodsListController@getGoodsList'); // 根据条件获取产品列表
+	Route::match(['get','post'],'/goodsSearch','GoodsListController@goodsSearch'); // 根据条件获取产品列表
+
+	// 獲取商品詳情
+	Route::post('/getGoodsInfo','GoodsController@getGoodsInfo'); // 获取热门产品
+	Route::get('/getHotGoods','GoodsController@getHotGoods'); // 获取热门产品
+	Route::post('/getGoodsComment','GoodsCommentController@getGoodsComment'); // 获取热门产品
+
+	// 购物车
+	Route::post('/addGoodsCar','GoodsCarController@addGoodsCar'); 
+	Route::get('/getGoodsCar','GoodsCarController@getGoodsCar'); 
+	Route::get('/getGoodsCarList','GoodsCarController@getGoodsCarList'); 
+	Route::post('/editGoodsCarNum','GoodsCarController@editGoodsCarNum'); 
+	Route::post('/delGoodsCar','GoodsCarController@delGoodsCar'); 
+	Route::post('/delGoodsCarOrder','GoodsCarController@delGoodsCarOrder'); 
+
+	// 用户登录
+	Route::post('/login','UserController@login');
+	Route::post('/logout','UserController@logout'); //退出
+	Route::post('/checkUser','UserController@checkUser'); // 验证是否登录
+	Route::post('/getUserInfo','UserController@me'); // 获取用户信息
+	Route::get('/getUserInfos','UserController@getUserInfo'); // 获取用户信息
+	Route::match(['get','post'],'/editUserInfo','UserController@editUserInfo'); // 修改用户信息
+	Route::match(['get','post'],'/editPassword','UserController@editPassword'); // 修改密码
+	Route::get('/getRegister','UserController@getRegister'); // 注册前
+
+	// 购物地址
+	Route::post('/addGoodsAddress','GoodsAddressController@addGoodsAddress'); //添加
+	Route::get('/getGoodsAddress','GoodsAddressController@getGoodsAddress');  // 获取
+	Route::post('/delGoodsAddress','GoodsAddressController@delGoodsAddress');  // 获取
+	Route::post('/defaultGoodsAddress','GoodsAddressController@defaultGoodsAddress');  // 获取
+
+	// 订单
+	Route::post('/addOrder','OrderController@addOrder');  // 添加订单
+	Route::post('/getOrderList','OrderController@getOrderList');  // 订单列表
+	Route::post('/order/cancelPay','OrderController@cancelPay');  // 取消订单
+	Route::post('/order/confirm','OrderController@confirm');  // 确认收货
+	Route::post('/order/logistics','OrderController@logistics');  // 确认收货
+	Route::post('/order/comment','OrderController@comment');  // 去评论
+	Route::post('/order/pay','OrderController@pay');  // 订单支付
+
+	// 支付
+	Route::match(['get','post'],'/pay', 'PayController@pay');
+	Route::match(['post'],'/pay/index', 'PayController@index'); // 支付回调
+
+	// 头像上传
+	Route::any('/avatar', 'UserController@avatar');
+	Route::post('/editAvatar', 'UserController@editAvatar'); // 修改头像
+
+
+	Route::get('/getGoodsServer', 'GoodsServerController@getGoodsServer');
+
+
 });
