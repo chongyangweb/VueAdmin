@@ -154,6 +154,10 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/wechat_cat/index', 'WechatCatController@index');
 	Route::get('/wechat_cat/push_wechat_cat', 'WechatCatController@push_wechat_cat'); // 推送到微信服务器
 
+	// 微信回调服务器接口
+	Route::any('/wechat/index', 'WechatController@index'); 
+	Route::any('/wechat/getQrcode', 'WechatController@getQrcode'); 
+
 
 });
 
@@ -226,6 +230,9 @@ Route::namespace('Shop')->prefix('Shop')->group(function(){
 	// 头像上传
 	Route::any('/avatar', 'UserController@avatar');
 	Route::post('/editAvatar', 'UserController@editAvatar'); // 修改头像
+
+	// 微信
+	Route::any('/wechat/getQrcode', 'WechatController@getQrcode'); 
 
 
 	Route::get('/getGoodsServer', 'GoodsServerController@getGoodsServer');
