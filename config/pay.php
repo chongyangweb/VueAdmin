@@ -31,7 +31,7 @@ return [
 
     'wechat' => [
         // 公众号 APPID
-        'app_id' => env('WECHAT_APP_ID', ''),
+        'app_id' => env('WECHAT_APP_ID', 'wx5b0a018866eb22bf'),
 
         // 小程序 APPID
         'miniapp_id' => env('WECHAT_MINIAPP_ID', ''),
@@ -40,7 +40,7 @@ return [
         'appid' => env('WECHAT_APPID', ''),
 
         // 微信支付分配的微信商户号
-        'mch_id' => env('WECHAT_MCH_ID', ''),
+        'mch_id' => env('WECHAT_MCH_ID', '1538497901'),
 
         // 微信支付异步通知地址
         'notify_url' => '',

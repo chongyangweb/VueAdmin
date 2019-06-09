@@ -159,6 +159,24 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::any('/wechat/getQrcode', 'WechatController@getQrcode'); 
 
 
+	/****************
+	 * 教师答题系统
+	**********************/
+
+	// 年级
+	Route::match(['get','post'],'/teacher_grade/add', 'TeacherGradeController@add');
+	Route::post('/teacher_grade/del', 'TeacherGradeController@del');
+	Route::match(['get','post'],'/teacher_grade/edit/{id}', 'TeacherGradeController@edit');
+	Route::post('/teacher_grade/index', 'TeacherGradeController@index');
+
+	// 科目
+	Route::match(['get','post'],'/teacher_subject/add', 'TeacherSubjectController@add');
+	Route::post('/teacher_subject/del', 'TeacherSubjectController@del');
+	Route::match(['get','post'],'/teacher_subject/edit/{id}', 'TeacherSubjectController@edit');
+	Route::post('/teacher_subject/index', 'TeacherSubjectController@index');
+
+
+
 });
 
 // 前端接口
