@@ -175,6 +175,20 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::match(['get','post'],'/teacher_subject/edit/{id}', 'TeacherSubjectController@edit');
 	Route::post('/teacher_subject/index', 'TeacherSubjectController@index');
 
+	// 材料
+	Route::match(['get','post'],'/teacher_material/add', 'TeacherMaterialController@add');
+	Route::post('/teacher_material/del', 'TeacherMaterialController@del');
+	Route::match(['get','post'],'/teacher_material/edit/{id}', 'TeacherMaterialController@edit');
+	Route::post('/teacher_material/index', 'TeacherMaterialController@index');
+
+	// 问题
+	Route::match(['get','post'],'/teacher_question/add', 'TeacherQuestionController@add');
+	Route::post('/teacher_question/del', 'TeacherQuestionController@del');
+	Route::post('/teacher_question/add_public', 'TeacherQuestionController@add_public');
+	Route::match(['get','post'],'/teacher_question/edit/{id}', 'TeacherQuestionController@edit');
+	Route::post('/teacher_question/index', 'TeacherQuestionController@index');
+	Route::post('/teacher_question_public/index', 'TeacherQuestionController@index_public');
+
 
 
 });
