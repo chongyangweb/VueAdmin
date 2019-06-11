@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Edu;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,21 +9,16 @@ use App\Model\Config;
 use App\Model\UserWechat;
 use App\Model\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
 
 class WechatController extends Controller
 {
-    public function index(Request $req){
-    	
-    	$config = $this->getConfig();
-		$app = Factory::officialAccount($config);
-		$response = $app->server->serve();
-		return $response;
-    }
+    
 
     // 掉起微信的授权
     public function getWechat(Request $req){
     	$config = $this->getConfig();
-        $config['oauth']['callback'] = '/api/Admin/wechat/callback';
+        $config['oauth']['callback'] = '/api/Edu/wechat/callback';
         $config['oauth']['scopes'] = ['snsapi_userinfo'];
 		$app = Factory::officialAccount($config);
 		$response = $app->oauth->redirect();
@@ -38,7 +33,7 @@ class WechatController extends Controller
         $user = $oauth->user();
         $userWechat = $user->original;
         $openid = $this->wechatLogin($userWechat);
-        header('location:'. ''); // 跳转到 user/profile
+        header('location:'. 'http://edu.qingwuit.com/user/wechat/login/'.$openid); // 跳转到 user/profile
     }
 
     // 微信登录  userWechat 为微信网页授权获取的信息
@@ -48,6 +43,7 @@ class WechatController extends Controller
         $wechatInfo = $user_wechat->where('user_id','>',0)->where('openid',$userWechat['openid'])->first();
         if(empty($wechatInfo)){
             // 新建账号
+            $userData['username'] = substr($userWechat['openid'],0,15);
             $userData['nickname'] = $userWechat['nickname'];
             $userData['password'] = Hash::make($userWechat['openid']);
             $userData['gender'] = $userWechat['sex'];
@@ -57,14 +53,15 @@ class WechatController extends Controller
 
             // 插入微信信息
             $wechatData['openid'] = $userWechat['openid'];
-            $wechatData['nickname'] = $userWechat['openid'];
-            $wechatData['sex'] = $userWechat['openid'];
+            $wechatData['nickname'] = $userWechat['nickname'];
+            $wechatData['sex'] = $userWechat['sex'];
+            $wechatData['avatar'] = $userWechat['headimgurl'];
             $wechatData['user_id'] = $user_id;
             $wechatData['add_time'] = time();
             $user_wechat->insert($wechatData);
         }
 
-        return $wechatInfo['openid'];
+        return $userWechat['openid'];
 
     }
 
@@ -90,6 +87,26 @@ class WechatController extends Controller
 
 		return $configs;
     }
+
+    // 微信登陆
+    public function getLogin(Request $req,User $user){
+        $credentials = $req->only('username','password');
+        // var_dump($credentials);
+        if (! $token = JWTAuth::attempt($credentials)) {
+            return ['code'=>500,'message'=>'登陆失败！'];
+        }
+
+        $user_wechat = new UserWechat;
+        $wechatInfo = $user_wechat->where('openid',$credentials['password'])->first();
+        $rs = $user->where(['id'=>$wechatInfo['user_id']])->update(['token'=>$token]); // 登陆成功
+        return response()->json([
+            'token' => $token,
+            'code' => 200,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
+        ]);
+    }
+
 
     
 }
