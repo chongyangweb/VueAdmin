@@ -18,4 +18,8 @@ class TeacherQuestion extends Model
     	return $this->hasOne('App\Model\TeacherSubject','id','subject_id');
     }
 
+    public function get_answer(){
+    	return $this->hasMany('App\Model\TeacherAnswer','question_id','id');
+    }
+
 }

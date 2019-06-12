@@ -8,6 +8,7 @@ use EasyWeChat\Factory;
 use App\Model\Config;
 use App\Model\UserWechat;
 use App\Model\User;
+use App\Model\TeacherExtend;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
@@ -59,6 +60,11 @@ class WechatController extends Controller
             $wechatData['user_id'] = $user_id;
             $wechatData['add_time'] = time();
             $user_wechat->insert($wechatData);
+
+            // 插入扩展信息
+            $teacher_extend = new TeacherExtend;
+            $teacher_extend_info['user_id'] = $user_id;
+            $teacher_extend->insert($teacher_extend_info);
         }
 
         return $userWechat['openid'];
