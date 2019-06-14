@@ -17,8 +17,8 @@ class IndexController extends BaseController
     public function getSign(Request $req,TeacherSignLog $teacher_sign_log){
         $time = date('Y-m-d');
         $userInfo = JWTAuth::parseToken()->touser();
-        $data['today'] = $teacher_sign_log->where(['user_id'=>$userInfo['user_id'],'format_time'=>$time])->exists();
-        $data['count'] = $teacher_sign_log->where(['user_id'=>$userInfo['user_id']])->count();
+        $data['today'] = $teacher_sign_log->where(['user_id'=>$userInfo['id'],'format_time'=>$time])->exists();
+        $data['count'] = count($teacher_sign_log->select('id','format_time')->where(['user_id'=>$userInfo['id']])->groupBy('format_time')->get());
         return $this->successMsg('ok',$data);
     }
     

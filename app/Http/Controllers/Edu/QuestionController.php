@@ -31,7 +31,7 @@ class QuestionController extends BaseController
     	$count = $teacher_question->where($where)->count(); // 这个类别下的所有题目
 
     	// 如果已经做完了
-    	if($extend['question_num'] < $sort_now){
+    	if($extend['question_num'] <= $sort_now){
     		$this->addSignLog($extend,$error_num);
     		return $this->autoMsg('202','每日首练完成！');
     	}
@@ -67,6 +67,18 @@ class QuestionController extends BaseController
 
     }
 
+    // 加入错题本
+    public function add_error_question(Request $req){
+        $teacher_extend = new TeacherExtend;
+        $question_id = $req->question_id;
+        $userInfo = $userInfo = JWTAuth::parseToken()->touser();
+        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
+        $error_question_arr = explode(',',$extend['error_question']);
+        $error_question_arr[] = $question_id;
+        $error_question_str = implode(',',$error_question_arr);
+        $teacher_extend->update(['user_id',$userInfo['id']])->update(['error_question'=>$error_question_str]);
+        return $this->successMsg();
+    }
 
     // 添加一条成就日志然后清空所有extend内的总数据
     public function addLog($extend){
@@ -79,11 +91,15 @@ class QuestionController extends BaseController
     	$data['all_make_error_num'] = $extend['all_make_error_num'];
     	$data['add_time'] = time();
     	$teacher_student_stage->insert($data);
-    	$teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>0,'all_make_error_num'=>0]);
+    	$teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>0,'all_make_error_num'=>0,'money'=>$extend['money']+0.02]);
     }
 
     // 增加每日做题日志
-    public function addSignLog($extend,$error_num,$make_num){
+    public function addSignLog($extend,$error_num){
+        $teacher_extend = new TeacherExtend;
+
+        $teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>($extend['all_make_num']+$extend['question_num']),'all_make_error_num'=>($extend['all_make_error_num']+$error_num),'money'=>$extend['money']+0.01]);
+
     	$teacher_sign_log = new TeacherSignLog;
     	$data['user_id'] = $extend['user_id'];
     	$data['grade_id'] = $extend['grade_id'];
