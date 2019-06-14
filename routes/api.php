@@ -190,6 +190,18 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/teacher_question/index', 'TeacherQuestionController@index');
 	Route::post('/teacher_question_public/index', 'TeacherQuestionController@index_public');
 
+	// 班级
+	Route::match(['get','post'],'/teacher_class/add', 'TeacherClassController@add');
+	Route::post('/teacher_class/del', 'TeacherClassController@del');
+	Route::match(['get','post'],'/teacher_class/edit/{id}', 'TeacherClassController@edit');
+	Route::post('/teacher_class/index', 'TeacherClassController@index');
+
+	// 试卷
+	Route::match(['get','post'],'/teacher_paper/add', 'TeacherPaperController@add');
+	Route::post('/teacher_paper/del', 'TeacherPaperController@del');
+	Route::match(['get','post'],'/teacher_paper/edit/{id}', 'TeacherPaperController@edit');
+	Route::post('/teacher_paper/index', 'TeacherPaperController@index');
+
 
 
 });
@@ -293,5 +305,8 @@ Route::namespace('Edu')->prefix('Edu')->group(function(){
 
 	// 获取题目
 	Route::post('/question/getQuestion', 'QuestionController@getQuestion'); // 正常题目
+
+	// 加入错题本
+	Route::post('/question/add_error_question', 'QuestionController@add_error_question'); // 正常题目
 
 });

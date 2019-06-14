@@ -54,10 +54,10 @@ class QuestionController extends BaseController
     		if(($count-$extend['all_make_num']+sort_now) > $extend['question_num']){
     			$questionData = $teacher_question->where($where)->with('get_answer')->inRandomOrder()->first(); // 随机取
     		}else{
-    			$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now)->take(1)->first(); // 正常取 
+    			$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取 
     		}
     	}else{
-    		$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now)->take(1)->first(); // 正常取
+    		$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取
     	}
 
     	// 插入设置范围数量
@@ -73,10 +73,18 @@ class QuestionController extends BaseController
         $question_id = $req->question_id;
         $userInfo = $userInfo = JWTAuth::parseToken()->touser();
         $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
-        $error_question_arr = explode(',',$extend['error_question']);
-        $error_question_arr[] = $question_id;
-        $error_question_str = implode(',',$error_question_arr);
-        $teacher_extend->update(['user_id',$userInfo['id']])->update(['error_question'=>$error_question_str]);
+        if(empty($extend['error_question'])){
+            $error_question_arr = [];
+        }else{
+            $error_question_arr = explode(',',$extend['error_question']);
+        }
+
+        if(!in_array($question_id,$error_question_arr)){
+            $error_question_arr[] = $question_id;
+            $error_question_str = implode(',',$error_question_arr);
+            $teacher_extend->where('user_id',$userInfo['id'])->update(['error_question'=>$error_question_str]);
+        }
+
         return $this->successMsg();
     }
 

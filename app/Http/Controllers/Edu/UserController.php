@@ -26,16 +26,23 @@ class UserController extends BaseController
         $userInfo = JWTAuth::parseToken()->touser();
         $data['grade'] = $teacher_grade->get();
         $data['subject'] = $teacher_subject->get();
-        $data['extend'] = $teacher_extend->where('user_id',$userInfo['id'])->first();
+       
         return $this->successMsg('ok',$data);
     }
 
     // 修改学习范围
     public function edit_learning_scope(Request $req,TeacherExtend $teacher_extend){
         $userInfo = JWTAuth::parseToken()->touser();
+        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
         $data['grade_id'] = $req->grade_id;
         $data['subject_id'] = $req->subject_id;
         $data['question_num'] = $req->question_num;
+
+        // 如果修改了年级科目则重置炼题进度
+        if($req->grade_id != $extend['grade_id'] || $req->subject_id != $extend['subject_id']){
+            $data['all_make_num'] = 0;
+        }
+        
         $teacher_extend->where('user_id',$userInfo['id'])->update($data);
         return $this->successMsg();
     }
