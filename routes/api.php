@@ -196,11 +196,23 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::match(['get','post'],'/teacher_class/edit/{id}', 'TeacherClassController@edit');
 	Route::post('/teacher_class/index', 'TeacherClassController@index');
 
+	// 班级人员先是
+	Route::match(['get','post'],'/teacher_class/user_index/{id}', 'TeacherClassController@user_index');
+	Route::match(['get','post'],'/teacher_class/user_del', 'TeacherClassController@user_del');	// 删除成员
+	Route::match(['get','post'],'/teacher_class/add_paper', 'TeacherClassController@add_paper'); //  加入试卷
+
 	// 试卷
 	Route::match(['get','post'],'/teacher_paper/add', 'TeacherPaperController@add');
 	Route::post('/teacher_paper/del', 'TeacherPaperController@del');
 	Route::match(['get','post'],'/teacher_paper/edit/{id}', 'TeacherPaperController@edit');
 	Route::post('/teacher_paper/index', 'TeacherPaperController@index');
+
+	// 试卷详细展示
+	Route::get('/teacher_paper/get_paper', 'TeacherPaperController@get_paper'); // 获取用户的试卷
+	Route::post('/teacher_paper/add_paper', 'TeacherPaperController@add_paper'); // 试卷中添加题目
+	Route::match(['get','post'],'/teacher_paper/question_index/{id}', 'TeacherPaperController@question_index');
+	Route::post('/teacher_paper/question_add', 'TeacherPaperController@question_add');
+	Route::post('/teacher_paper/question_del', 'TeacherPaperController@question_del');
 
 
 

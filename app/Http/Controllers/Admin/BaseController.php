@@ -11,6 +11,7 @@ class BaseController extends Controller
 	public $limit = 30;
 	public $page = 1;
 	public $where = [];
+    public $whereIn = [];
 	public $order = ['id','desc'];
 	public $select = [];
 	public $join = '';
@@ -43,6 +44,12 @@ class BaseController extends Controller
     			}
     		}
     	}
+
+        if(!empty($this->whereIn)){
+            foreach($this->whereIn as $v){
+                 $tableObj = $tableObj->whereIn($v[0],$v[1]);
+            }
+        }
 
     	// 字段筛选
     	if(!empty($this->select)){
@@ -79,6 +86,12 @@ class BaseController extends Controller
     			}
     		}
     	}
+
+        if(!empty($this->whereIn)){
+            foreach($this->whereIn as $v){
+                 $tableObj = $tableObj->whereIn($v[0],$v[1]);
+            }
+        }
 
     	// file_put_contents(getcwd().'/huanggao.txt', $tableObj);
     	$data['count'] = $tableObj->count();
