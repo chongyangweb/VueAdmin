@@ -24,6 +24,7 @@ class UserController extends BaseController
     // 获取年级班级
     public function get_grade_subject(Request $req,TeacherGrade $teacher_grade,TeacherSubject $teacher_subject,TeacherExtend $teacher_extend){
         $userInfo = JWTAuth::parseToken()->touser();
+        $data['extend'] = $teacher_extend->where('user_id',$userInfo['id'])->first();
         $data['grade'] = $teacher_grade->get();
         $data['subject'] = $teacher_subject->get();
        

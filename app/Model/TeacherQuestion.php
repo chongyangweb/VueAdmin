@@ -22,4 +22,8 @@ class TeacherQuestion extends Model
     	return $this->hasMany('App\Model\TeacherAnswer','question_id','id');
     }
 
+    public function get_material(){
+        return $this->hasOne('App\Model\TeacherMaterial','id','material_id');
+    }
+
 }

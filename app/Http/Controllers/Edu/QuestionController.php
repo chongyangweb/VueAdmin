@@ -38,7 +38,7 @@ class QuestionController extends BaseController
 
     	// 如果设置的数量大于 类别数量
     	if($count<$extend['question_num']){
-    		var_dump($where,$count,$extend['question_num']);
+    		// var_dump($where,$count,$extend['question_num']);
     		return $this->errorMsg('该类目下的题目不够，请设置学习范围！');
     	}
 
@@ -52,18 +52,38 @@ class QuestionController extends BaseController
     	if(($count-$extend['all_make_num']) < $extend['question_num']){
     		// 如果开始超出就开始随机取
     		if(($count-$extend['all_make_num']+sort_now) > $extend['question_num']){
-    			$questionData = $teacher_question->where($where)->with('get_answer')->inRandomOrder()->first(); // 随机取
+    			$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->inRandomOrder()->first(); // 随机取
     		}else{
-    			$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取 
+    			$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取 
     		}
     	}else{
-    		$questionData = $teacher_question->where($where)->with(['get_answer'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取
+    		$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取
     	}
 
     	// 插入设置范围数量
     	$questionData['question_num'] = $extend['question_num'];
 
     	return $this->successMsg('ok',$questionData);
+
+    }
+
+    // 获取错题题目
+    public function getQuestionError(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
+        $sort_now = $req->error_sort_now;
+        $error_num = $req->error_error_num;
+        $userInfo = $userInfo = JWTAuth::parseToken()->touser();
+        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
+        $errorIds = explode(',',$extend['error_question']);
+
+        // if($sort_now)
+
+        $count = $teacher_question->whereIn('id',$errorIds)->count(); // 这个类别下的所有题目
+        $questionData = $teacher_question->where('id',$errorIds[$sort_num])->with(['get_answer','get_material'])->first(); // 正常取
+
+        // 插入设置范围数量
+        $questionData['question_num'] = $count;
+
+        return $this->successMsg('ok',$questionData);
 
     }
 

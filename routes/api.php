@@ -181,6 +181,7 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/teacher_material/del', 'TeacherMaterialController@del');
 	Route::match(['get','post'],'/teacher_material/edit/{id}', 'TeacherMaterialController@edit');
 	Route::post('/teacher_material/index', 'TeacherMaterialController@index');
+	Route::post('/teacher_material/bind_question', 'TeacherMaterialController@bind_question');
 
 	// 问题
 	Route::match(['get','post'],'/teacher_question/add', 'TeacherQuestionController@add');
