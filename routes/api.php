@@ -181,6 +181,7 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/teacher_material/del', 'TeacherMaterialController@del');
 	Route::match(['get','post'],'/teacher_material/edit/{id}', 'TeacherMaterialController@edit');
 	Route::post('/teacher_material/index', 'TeacherMaterialController@index');
+	Route::post('/teacher_material/bind_question', 'TeacherMaterialController@bind_question');
 
 	// 问题
 	Route::match(['get','post'],'/teacher_question/add', 'TeacherQuestionController@add');
@@ -189,6 +190,30 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::match(['get','post'],'/teacher_question/edit/{id}', 'TeacherQuestionController@edit');
 	Route::post('/teacher_question/index', 'TeacherQuestionController@index');
 	Route::post('/teacher_question_public/index', 'TeacherQuestionController@index_public');
+
+	// 班级
+	Route::match(['get','post'],'/teacher_class/add', 'TeacherClassController@add');
+	Route::post('/teacher_class/del', 'TeacherClassController@del');
+	Route::match(['get','post'],'/teacher_class/edit/{id}', 'TeacherClassController@edit');
+	Route::post('/teacher_class/index', 'TeacherClassController@index');
+
+	// 班级人员先是
+	Route::match(['get','post'],'/teacher_class/user_index/{id}', 'TeacherClassController@user_index');
+	Route::match(['get','post'],'/teacher_class/user_del', 'TeacherClassController@user_del');	// 删除成员
+	Route::match(['get','post'],'/teacher_class/add_paper', 'TeacherClassController@add_paper'); //  加入试卷
+
+	// 试卷
+	Route::match(['get','post'],'/teacher_paper/add', 'TeacherPaperController@add');
+	Route::post('/teacher_paper/del', 'TeacherPaperController@del');
+	Route::match(['get','post'],'/teacher_paper/edit/{id}', 'TeacherPaperController@edit');
+	Route::post('/teacher_paper/index', 'TeacherPaperController@index');
+
+	// 试卷详细展示
+	Route::get('/teacher_paper/get_paper', 'TeacherPaperController@get_paper'); // 获取用户的试卷
+	Route::post('/teacher_paper/add_paper', 'TeacherPaperController@add_paper'); // 试卷中添加题目
+	Route::match(['get','post'],'/teacher_paper/question_index/{id}', 'TeacherPaperController@question_index');
+	Route::post('/teacher_paper/question_add', 'TeacherPaperController@question_add');
+	Route::post('/teacher_paper/question_del', 'TeacherPaperController@question_del');
 
 
 
@@ -293,5 +318,8 @@ Route::namespace('Edu')->prefix('Edu')->group(function(){
 
 	// 获取题目
 	Route::post('/question/getQuestion', 'QuestionController@getQuestion'); // 正常题目
+
+	// 加入错题本
+	Route::post('/question/add_error_question', 'QuestionController@add_error_question'); // 正常题目
 
 });

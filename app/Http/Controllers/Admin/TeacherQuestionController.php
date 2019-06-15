@@ -47,6 +47,7 @@ class TeacherQuestionController extends BaseController
         $data['grade_id'] = $req->grade_id;
         $data['subject_id'] = $req->subject_id;
         $data['is_type'] = $req->is_type;
+        $data['material_id'] = $req->material_id;
         $data['teacher_id'] = $userInfo['id'];
         $data['add_time'] = time();
 
@@ -79,12 +80,13 @@ class TeacherQuestionController extends BaseController
 
     }
 
-    public function edit(Request $req,TeacherQuestion $teacher_question,TeacherGrade $teacher_grade,TeacherSubject $teacher_subject,TeacherAnswer $teacher_answer,$id){
+    public function edit(Request $req,TeacherQuestion $teacher_question,TeacherGrade $teacher_grade,TeacherSubject $teacher_subject,TeacherAnswer $teacher_answer,TeacherMaterial $teacher_material,$id){
         $userInfo = JWTAuth::parseToken()->touser();
         if($req->isMethod('get')){
             $data['info'] = $teacher_question->find($id);
             $data['grade'] = $teacher_grade->get();
             $data['subject'] = $teacher_subject->get();
+            $data['material'] = $teacher_material->find($data['info']['material_id']);
             $data['answer'] = $teacher_answer->where('question_id',$id)->get();
             return $data;
         }
@@ -98,6 +100,7 @@ class TeacherQuestionController extends BaseController
         $data['subject_id'] = $req->subject_id;
         $data['is_type'] = $req->is_type;
         $data['teacher_id'] = $userInfo['id'];
+        $data['material_id'] = $req->material_id;
 
         \DB::beginTransaction(); 
 
@@ -139,7 +142,7 @@ class TeacherQuestionController extends BaseController
 
     public function add_public(Request $req,TeacherQuestion $teacher_question,TeacherAnswer $teacher_answer){
         $ids = explode(',',$req->id);
-        $rs = $teacher_question->whereIn('id',$ids)->update(['is_public'=>2]);
+        $rs = $teacher_question->whereIn('id',$ids)->update(['is_public'=>1]);
         return $this->returnData($rs);
     }
 
