@@ -156,7 +156,8 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 
 	// 微信回调服务器接口
 	Route::any('/wechat/index', 'WechatController@index'); 
-	Route::any('/wechat/getQrcode', 'WechatController@getQrcode'); 
+	Route::any('/wechat/getWechat', 'WechatController@getWechat'); 
+	Route::any('/wechat/callback', 'WechatController@callback'); 
 
 
 	/****************
@@ -269,5 +270,28 @@ Route::namespace('Shop')->prefix('Shop')->group(function(){
 
 	Route::get('/getGoodsServer', 'GoodsServerController@getGoodsServer');
 
+
+});
+
+
+// 教育答题前端api
+Route::namespace('Edu')->prefix('Edu')->group(function(){
+
+	// 微信回调服务器接口
+	Route::any('/wechat/getWechat', 'WechatController@getWechat'); 
+	Route::any('/wechat/callback', 'WechatController@callback'); 
+
+	Route::post('/wechat/getLogin', 'WechatController@getLogin'); // 微信登陆
+
+	// 用户信息
+	Route::get('/user/get_user_info', 'UserController@get_user_info'); // 获取用户信息
+	Route::get('/user/get_grade_subject', 'UserController@get_grade_subject'); // 获取年纪科目
+	Route::post('/user/edit_learning_scope', 'UserController@edit_learning_scope');// 修改学习范围
+
+	// 首页获取打卡日志
+	Route::get('/index/getSign', 'IndexController@getSign'); // 数量和今日打卡
+
+	// 获取题目
+	Route::post('/question/getQuestion', 'QuestionController@getQuestion'); // 正常题目
 
 });
