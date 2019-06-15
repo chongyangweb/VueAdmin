@@ -68,24 +68,24 @@ class QuestionController extends BaseController
     }
 
     // 获取错题题目
-    public function getQuestionError(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
-        $sort_now = $req->error_sort_now;
-        $error_num = $req->error_error_num;
-        $userInfo = $userInfo = JWTAuth::parseToken()->touser();
-        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
-        $errorIds = explode(',',$extend['error_question']);
+    // public function getQuestionError(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
+    //     $sort_now = $req->error_sort_now;
+    //     $error_num = $req->error_error_num;
+    //     $userInfo = $userInfo = JWTAuth::parseToken()->touser();
+    //     $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
+    //     $errorIds = explode(',',$extend['error_question']);
 
-        // if($sort_now)
+    //     // if($sort_now)
 
-        $count = $teacher_question->whereIn('id',$errorIds)->count(); // 这个类别下的所有题目
-        $questionData = $teacher_question->where('id',$errorIds[$sort_num])->with(['get_answer','get_material'])->first(); // 正常取
+    //     $count = $teacher_question->whereIn('id',$errorIds)->count(); // 这个类别下的所有题目
+    //     $questionData = $teacher_question->where('id',$errorIds[$sort_num])->with(['get_answer','get_material'])->first(); // 正常取
 
-        // 插入设置范围数量
-        $questionData['question_num'] = $count;
+    //     // 插入设置范围数量
+    //     $questionData['question_num'] = $count;
 
-        return $this->successMsg('ok',$questionData);
+    //     return $this->successMsg('ok',$questionData);
 
-    }
+    // }
 
     // 加入错题本
     public function add_error_question(Request $req){
