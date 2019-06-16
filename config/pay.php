@@ -43,10 +43,10 @@ return [
         'mch_id' => env('WECHAT_MCH_ID', '1538497901'),
 
         // 微信支付异步通知地址
-        'notify_url' => '',
+        'notify_url' => 'http://s.qingwuit.com/api/Shop/pay/wechat_index',
 
         // 微信支付签名秘钥
-        'key' => env('WECHAT_KEY', ''),
+        'key' => env('WECHAT_KEY', 'l73fAeSw6Vy76inufzlSQsudMX6Muejh'),
 
         // 客户端证书路径，退款、红包等需要用到。请填写绝对路径，linux 请确保权限问题。pem 格式。
         'cert_client' => '',

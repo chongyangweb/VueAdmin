@@ -43,7 +43,8 @@ class GoodsController extends BaseController
         $data['sub_title'] = is_null($req->sub_title)?'':$req->sub_title;
         $data['user_id'] = $req->user_id;
         $data['price'] = is_null($req->price)?0:$req->price;
-        $data['content'] = is_null($req->content)?'':$req->content;;
+        $data['content'] = is_null($req->content)?'':$req->content;
+        $data['num'] = $req->num;
         $data['is_hot'] = $req->is_hot;
         $data['is_top'] = $req->is_top;
         $data['is_sale'] = $req->is_sale;
@@ -86,7 +87,8 @@ class GoodsController extends BaseController
         $data['goods_no'] = is_null($req->goods_no)?'':$req->goods_no;
         $data['user_id'] = $req->user_id;
         $data['price'] = is_null($req->price)?0:$req->price;
-        $data['content'] = is_null($req->content)?'':$req->content;;
+        $data['content'] = is_null($req->content)?'':$req->content;
+        $data['num'] = $req->num;
         $data['is_hot'] = $req->is_hot;
         $data['is_top'] = $req->is_top;
         $data['is_sale'] = $req->is_sale;

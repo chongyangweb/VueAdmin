@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Model\OrderPayLog;
 use App\Model\Order;
 use App\Model\UserExtend;
+use App\Model\UserWechat;
 use App\Model\BalanceLog;
 use Pay;
 
@@ -16,7 +17,6 @@ class PayController extends BaseController
 	// 回调地址
 	public function index(Request $req,OrderPayLog $order_pay_log,Order $order){
 		$order_no = $req->out_trade_no;
-		// $this->putFile('info',$order_no);
 		// 如果商户号没传回来，肯定报错
 		if(empty($order_no)){
 			return;
@@ -25,11 +25,8 @@ class PayController extends BaseController
 		// 获取订单信息
 		$orderInfo = $order->where('order_no',$order_no)->first();
 
-		$pay_type =  1; // 默认微信
-		// 判断是微信还是支付宝
-		if(!isset($req->return_code)){
-			$pay_type = 2;
-		}
+		$pay_type = 2;
+
 
 		// 开启事务防止出错
 		\DB::beginTransaction(); 
@@ -38,41 +35,19 @@ class PayController extends BaseController
 			$orderPayLogData['user_id'] = $orderInfo['user_id'];
 			$orderPayLogData['order_no'] = $order_no;
 			$orderPayLogData['add_time'] = time(); // 加入时间
-			switch ($pay_type) {
-				case '1': // 微信
-					$orderPayLogData['pay_no'] = $req->transaction_id; // 微信支付订单号
-					$orderPayLogData['is_type'] = 0; // 收入还是支出
+			
+			$orderPayLogData['pay_no'] = $req->trade_no; // 支付宝订单号
+			$orderPayLogData['is_type'] = 0; // 收入还是支出
 
-					// 退款回调
-					if(isset($req->refund_status)){
-						$orderPayLogData['is_type'] = 1; 
-					}
-
-					$orderPayLogData['money'] = $req->total_fee/100; // 支付金额
-					$orderPayLogData['software'] = 'wechat'; // 支付软件
-					$orderPayLogData['return_code'] = $req->result_code; // 业务结果
-					$orderPayLogData['remarks'] = !isset($req->err_code_des)?'':$req->err_code_des; // 错误代码描述
-
-					break;
-
-				case '2': // 支付宝
-					$orderPayLogData['pay_no'] = $req->trade_no; // 支付宝订单号
-					$orderPayLogData['is_type'] = 0; // 收入还是支出
-
-					// 退款回调
-					if(isset($req->refund_fee) && !empty($req->refund_fee)){
-						$orderPayLogData['is_type'] = 1; 
-					}
-
-					$orderPayLogData['money'] = $req->total_amount; // 支付金额
-					$orderPayLogData['software'] = 'alipay'; // 支付软件
-					$orderPayLogData['return_code'] = $req->trade_status; // 业务结果
-					break;
-				
-				default:
-					# code...
-					break;
+			// 退款回调
+			if(isset($req->refund_fee) && !empty($req->refund_fee)){
+				$orderPayLogData['is_type'] = 1; 
 			}
+
+			$orderPayLogData['money'] = $req->total_amount; // 支付金额
+			$orderPayLogData['software'] = 'alipay'; // 支付软件
+			$orderPayLogData['return_code'] = $req->trade_status; // 业务结果
+	
 
 			$order_pay_log->insert($orderPayLogData);// 支付日志插入
 
@@ -115,12 +90,88 @@ class PayController extends BaseController
 		}
 		
 		// 微信和阿里回调接口不一样
-		if($orderPayLogData['software'] == 'wechat'){
-			echo '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-		}else{
-			echo 'success';
+		echo 'success';
+		
+	}
+
+	public function wechat_index(Request $req,OrderPayLog $order_pay_log,Order $order){
+		$wechatReturn = json_decode(json_encode(simplexml_load_string(file_get_contents("php://input"), 'SimpleXMLElement', LIBXML_NOCDATA)),true);
+		if(empty($wechatReturn)){
+			return;
+		}
+		$order_no = $wechatReturn['out_trade_no'];
+		
+		// 获取订单信息
+		$orderInfo = $order->where('order_no',$order_no)->first();
+
+		$pay_type =  1; // 默认微信
+
+		// 开启事务防止出错
+		\DB::beginTransaction(); 
+		try {
+			// 根据类型来存储支付成功信息
+			$orderPayLogData['user_id'] = $orderInfo['user_id'];
+			$orderPayLogData['order_no'] = $order_no;
+			$orderPayLogData['add_time'] = time(); // 加入时间
+		
+			$orderPayLogData['pay_no'] = $wechatReturn['transaction_id']; // 微信支付订单号
+			$orderPayLogData['is_type'] = 0; // 收入还是支出
+
+			// 退款回调
+			if(isset($wechatReturn['refund_status'])){
+				$orderPayLogData['is_type'] = 1; 
+			}
+
+			$orderPayLogData['money'] = $wechatReturn['total_fee']/100; // 支付金额
+			$orderPayLogData['software'] = 'wechat'; // 支付软件
+			$orderPayLogData['return_code'] = $wechatReturn['result_code']; // 业务结果
+			$orderPayLogData['remarks'] = !isset($wechatReturn['err_code_des'])?'':$wechatReturn['err_code_des']; // 错误代码描述
+
+
+
+			$order_pay_log->insert($orderPayLogData);// 支付日志插入
+
+			$balance = $orderInfo['price']-$orderPayLogData['money'];// 用户余额支付多少;
+
+			// 准备修改订单信息
+			
+
+			$orderEditData['balance'] = $balance;
+			$orderEditData['pay_type'] = $orderPayLogData['software'];
+			$orderEditData['pay_time'] = $orderPayLogData['add_time'];
+			$orderEditData['pay_status'] = 0;
+
+			$pay_success = false; // 是否支付成功
+			if($wechatReturn['return_code'] == 'SUCCESS'){
+				$pay_success = true;
+			}
+			if($pay_success){ // 如果支付支付成功則修改狀態
+				$orderEditData['pay_status'] = 1;
+			}
+
+			$order->where('order_no',$order_no)->update($orderEditData); // 修改订单
+
+			// 开始修改用户的日志;并开始修改余额
+			if($balance > 0 ){
+				$balancLogData['user_id'] = $orderPayLogData['user_id'];
+				$balancLogData['is_type'] = $orderPayLogData['is_type'];
+				$balancLogData['money'] = $balance;
+				$balancLogData['remarks'] = '订单号：'.$order_no;
+				$this->auto_balance($balancLogData);
+			}
+			
+
+
+			\DB::commit(); // 提交事务
+
+		} catch (\Exception $e) {
+			\DB::rollBack(); // 回滚事务
+			file_put_contents(getcwd().'/pay_error.txt', $e->getMessage());
 		}
 		
+		// 微信和阿里回调接口不一样
+		echo '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+
 	}
 
 	// 支付
@@ -150,6 +201,12 @@ class PayController extends BaseController
 					if($isMobile == 1){
 						$data = Pay::wechat()->wap($order);
 					}
+
+					// 手机端用微信跳转支付
+					if($isMobile == 3){
+						$data = Pay::wechat()->mp($order);
+					}
+
 
 					# code...
 					break;
@@ -199,8 +256,13 @@ class PayController extends BaseController
 		
 		if($pay_type == 1){ // 微信支付
 			$order['out_trade_no'] 		= 	$orderList[0]['order_no'];
-			$order['total_fee'] 		= 	$total_amount-$balance;
+			$order['total_fee'] 		= 	($total_amount-$balance)*100;
 			$order['body'] 				= 	$orderList[0]['title'];
+			if($isMobile == 3){
+				$user_wechat = new UserWechat;
+				$user_wechat_info = $user_wechat->where('user_id',$orderList[0]['user_id'])->first();
+				$order['openid'] = $user_wechat_info['openid'];
+			}
 		}
 
 		if($pay_type == 2){ // 支付宝支付

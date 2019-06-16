@@ -48,6 +48,7 @@ class TeacherQuestionController extends BaseController
         $data['subject_id'] = $req->subject_id;
         $data['is_type'] = $req->is_type;
         $data['material_id'] = $req->material_id;
+        $data['analysis'] = $req->analysis;
         $data['teacher_id'] = $userInfo['id'];
         $data['add_time'] = time();
 
@@ -101,6 +102,7 @@ class TeacherQuestionController extends BaseController
         $data['is_type'] = $req->is_type;
         $data['teacher_id'] = $userInfo['id'];
         $data['material_id'] = $req->material_id;
+        $data['analysis'] = $req->analysis;
 
         \DB::beginTransaction(); 
 

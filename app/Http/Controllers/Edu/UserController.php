@@ -47,5 +47,13 @@ class UserController extends BaseController
         $teacher_extend->where('user_id',$userInfo['id'])->update($data);
         return $this->successMsg();
     }
+
+    // 清空错题本
+    public function clear_error_question(Request $req,TeacherExtend $teacher_extend){
+        $userInfo = JWTAuth::parseToken()->touser();
+        $data['error_question'] = '';
+        $teacher_extend->where('user_id',$userInfo['id'])->update($data);
+        return $this->successMsg();
+    }
     
 }

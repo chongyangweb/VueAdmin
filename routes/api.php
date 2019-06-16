@@ -284,6 +284,7 @@ Route::namespace('Shop')->prefix('Shop')->group(function(){
 	// 支付
 	Route::match(['get','post'],'/pay', 'PayController@pay');
 	Route::match(['post'],'/pay/index', 'PayController@index'); // 支付回调
+	Route::match(['post'],'/pay/wechat_index', 'PayController@wechat_index'); // 支付回调
 
 	// 头像上传
 	Route::any('/avatar', 'UserController@avatar');
@@ -313,11 +314,15 @@ Route::namespace('Edu')->prefix('Edu')->group(function(){
 	Route::get('/user/get_grade_subject', 'UserController@get_grade_subject'); // 获取年纪科目
 	Route::post('/user/edit_learning_scope', 'UserController@edit_learning_scope');// 修改学习范围
 
+	Route::get('/user/clear_error_question', 'UserController@clear_error_question');// 清空错题本
+
+
 	// 首页获取打卡日志
 	Route::get('/index/getSign', 'IndexController@getSign'); // 数量和今日打卡
 
 	// 获取题目
 	Route::post('/question/getQuestion', 'QuestionController@getQuestion'); // 正常题目
+	Route::post('/question/getQuestionError', 'QuestionController@getQuestionError'); // 错题题目
 
 	// 加入错题本
 	Route::post('/question/add_error_question', 'QuestionController@add_error_question'); // 正常题目

@@ -62,8 +62,6 @@ class GoodsListController extends BaseController
     		}
     	}
 
-
-
     	$goods = $goods->with('get_sku');
     	$data['data'] = $this->getData($goods);
         $data['page'] = $this->getPage('Goods');

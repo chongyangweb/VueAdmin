@@ -26,13 +26,22 @@ class BaseController extends Controller
     	$agent = $req->agent;
 
     	if(!empty($dealer)){
-    		$this->dealer = $dealer;
-    		if(empty($agent)){
-    			$this->agent = $this->dealer;
-    		}else{
-    			$this->agent = $agent;
-    		}
-    	}
+            if(empty(session('dealer'))){
+                session('dealer',$dealer);
+                $this->dealer = $dealer;
+                // if(empty($agent)){
+                //     $this->agent = $this->dealer;
+                // }else{
+                //     $this->agent = $agent;
+                // }
+            }else{
+                $this->dealer = session('dealer');
+            }
+    	}else{
+            if(!empty(session('dealer'))){
+                $this->dealer = session('dealer');
+            }
+        }
     }
 
     // 公用状态码返回

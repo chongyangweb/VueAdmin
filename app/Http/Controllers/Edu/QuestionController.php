@@ -68,24 +68,37 @@ class QuestionController extends BaseController
     }
 
     // 获取错题题目
-    // public function getQuestionError(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
-    //     $sort_now = $req->error_sort_now;
-    //     $error_num = $req->error_error_num;
-    //     $userInfo = $userInfo = JWTAuth::parseToken()->touser();
-    //     $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
-    //     $errorIds = explode(',',$extend['error_question']);
+    public function getQuestionError(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
+        $sort_now = $req->error_sort_now;
+        $error_num = $req->error_error_num;
+        $error_list = $req->error_list;
+        $userInfo = $userInfo = JWTAuth::parseToken()->touser();
+        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
 
-    //     // if($sort_now)
+        if(empty($error_list)){
+            $error_question = $extend['error_question'];
+        }else{
+            $error_question = $error_list;
+        }
+        $errorIds = explode(',',$error_question);
 
-    //     $count = $teacher_question->whereIn('id',$errorIds)->count(); // 这个类别下的所有题目
-    //     $questionData = $teacher_question->where('id',$errorIds[$sort_num])->with(['get_answer','get_material'])->first(); // 正常取
+        // 如果已经做完了
+        if(count($errorIds) <= $sort_now){
+            $this->addSignLog($extend,$error_num);
+            return $this->autoMsg('202','每日首练完成！');
+        }
+        // var_dump(count($errorIds) , $sort_now);
 
-    //     // 插入设置范围数量
-    //     $questionData['question_num'] = $count;
+        $count = $teacher_question->whereIn('id',$errorIds)->count(); // 这个类别下的所有题目
+        $questionData = $teacher_question->where('id',$errorIds[$sort_now])->with(['get_answer','get_material'])->first(); // 正常取
 
-    //     return $this->successMsg('ok',$questionData);
+        // 插入设置范围数量
+        $questionData['question_num'] = $count;
+        $questionData['error_list'] = $extend['error_question'];
 
-    // }
+        return $this->successMsg('ok',$questionData);
+
+    }
 
     // 加入错题本
     public function add_error_question(Request $req){
