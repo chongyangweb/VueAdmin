@@ -139,6 +139,7 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	// 订单
 	Route::post('/order/index', 'OrderController@index');
 	Route::post('/order/getOrderInfo', 'OrderController@getOrderInfo');
+	Route::post('/order/edit_delivery_no', 'OrderController@edit_delivery_no'); // 修改快递号，和状态
 
 	// 售后服务内容
 	Route::match(['get','post'],'/goods_server/edit', 'GoodsServerController@edit');
