@@ -136,6 +136,17 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/goods_slide/index', 'GoodsSlideController@index');
 	Route::match(['options','post'],'/goods_slide/slide', 'GoodsSlideController@slide');
 
+	// 快递模版
+	Route::match(['get','post'],'/goods_delivery/add', 'GoodsDeliveryController@add');
+	Route::post('/goods_delivery/del', 'GoodsDeliveryController@del');
+	Route::match(['get','post'],'/goods_delivery/edit/{id}', 'GoodsDeliveryController@edit');
+	Route::post('/goods_delivery/index', 'GoodsDeliveryController@index');
+
+	// 地区代理
+	// 获取指定的地区信息
+	Route::match(['get','post'],'/goods_area/getArea', 'GoodsAreaController@getArea');
+	Route::match(['get','post'],'/goods_area/editArea', 'GoodsAreaController@editArea');//添加代理
+
 	// 订单
 	Route::post('/order/index', 'OrderController@index');
 	Route::post('/order/getOrderInfo', 'OrderController@getOrderInfo');
