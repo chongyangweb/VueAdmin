@@ -19,16 +19,20 @@ class QuestionController extends BaseController
     public function getQuestion(Request $req,TeacherExtend $teacher_extend,TeacherQuestion $teacher_question){
     	$sort_now = $req->sort_now;
     	$error_num = $req->error_num;
+        $is_subject = $req->is_subject==1?3:1;
     	$userInfo = $userInfo = JWTAuth::parseToken()->touser();
     	$extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
 
     	$where = [
     		'grade_id'		=>	$extend['grade_id'],
-    		'subject_id'	=>	$extend['subject_id'],
+    		'subject_id'	=>	$is_subject,//$extend['subject_id'],
     		'is_public'		=>	1
     	];
 
     	$count = $teacher_question->where($where)->count(); // 这个类别下的所有题目
+
+        // 新加每次去所有题目
+        $extend['question_num'] = $count;
 
     	// 如果已经做完了
     	if($extend['question_num'] <= $sort_now){
@@ -37,10 +41,10 @@ class QuestionController extends BaseController
     	}
 
     	// 如果设置的数量大于 类别数量
-    	if($count<$extend['question_num']){
-    		// var_dump($where,$count,$extend['question_num']);
-    		return $this->errorMsg('该类目下的题目不够，请设置学习范围！');
-    	}
+    	// if($count<$extend['question_num']){
+    	// 	// var_dump($where,$count,$extend['question_num']);
+    	// 	return $this->errorMsg('该类目下的题目不够，请设置学习范围！');
+    	// }
 
     	// 如果这个人已经把该类目的题目全部做完,则返回给他信息让他初始化 并生成一阶段的日志
     	if($count<=$extend['all_make_num']){
@@ -51,17 +55,17 @@ class QuestionController extends BaseController
     	// 如果取题目已经开始不够了 少的题目再随机从题库取
     	if(($count-$extend['all_make_num']) < $extend['question_num']){
     		// 如果开始超出就开始随机取
-    		if(($count-$extend['all_make_num']+sort_now) > $extend['question_num']){
-    			$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->inRandomOrder()->first(); // 随机取
-    		}else{
+    		// if(($count-$extend['all_make_num']+$sort_now) > $extend['question_num']){
+    		// 	$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->inRandomOrder()->first(); // 随机取
+    		// }else{
     			$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取 
-    		}
+    		// }
     	}else{
     		$questionData = $teacher_question->where($where)->with(['get_answer','get_material'])->skip($sort_now+$extend['all_make_num'])->take(1)->first(); // 正常取
     	}
 
     	// 插入设置范围数量
-    	$questionData['question_num'] = $extend['question_num'];
+    	$questionData['question_num'] = $count;//$extend['question_num'];
 
     	return $this->successMsg('ok',$questionData);
 
@@ -121,6 +125,21 @@ class QuestionController extends BaseController
         return $this->successMsg();
     }
 
+    // 删掉作对的题目
+    public function del_error_question(Request $req,TeacherExtend $teacher_extend){
+        $id = $req->id;
+        $userInfo = $userInfo = JWTAuth::parseToken()->touser();
+        $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
+        $errorIds = explode(',',$extend['error_question']);
+        foreach($errorIds as $k=>$v){
+            if($v == $id){
+                unset($errorIds[$k]);
+            }
+        }
+        $rs = $teacher_extend->where('user_id',$userInfo['id'])->update(['error_question'=>implode(',',$errorIds)]);
+        return $this->successMsg();
+    }
+
     // 添加一条成就日志然后清空所有extend内的总数据
     public function addLog($extend){
     	$teacher_extend = new TeacherExtend;
@@ -139,7 +158,8 @@ class QuestionController extends BaseController
     public function addSignLog($extend,$error_num){
         $teacher_extend = new TeacherExtend;
 
-        $teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>($extend['all_make_num']+$extend['question_num']),'all_make_error_num'=>($extend['all_make_error_num']+$error_num),'money'=>$extend['money']+0.01]);
+        // $teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>($extend['all_make_num']+$extend['question_num']),'all_make_error_num'=>($extend['all_make_error_num']+$error_num),'money'=>$extend['money']+0.01]);
+        $teacher_extend->where('user_id',$extend['user_id'])->update(['all_make_num'=>0,'all_make_error_num'=>($extend['all_make_error_num']+$error_num),'money'=>$extend['money']+0.01]);
 
     	$teacher_sign_log = new TeacherSignLog;
     	$data['user_id'] = $extend['user_id'];

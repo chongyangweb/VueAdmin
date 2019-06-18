@@ -335,6 +335,7 @@ Route::namespace('Edu')->prefix('Edu')->group(function(){
 	// 获取题目
 	Route::post('/question/getQuestion', 'QuestionController@getQuestion'); // 正常题目
 	Route::post('/question/getQuestionError', 'QuestionController@getQuestionError'); // 错题题目
+	Route::post('/question/del_error_question', 'QuestionController@del_error_question'); // 错题删除
 
 	// 加入错题本
 	Route::post('/question/add_error_question', 'QuestionController@add_error_question'); // 正常题目
