@@ -9,16 +9,16 @@ use App\Model\TeacherExtend;
 use App\Model\TeacherGrade;
 use App\Model\TeacherSubject;
 use App\Model\TeacherSignLog;
-use App\Model\GoodsServer;
+use App\Model\TeacherGg;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class IndexController extends BaseController
 {
     // 查看日志
-    public function getSign(Request $req,TeacherSignLog $teacher_sign_log,TeacherExtend $teacher_extend,TeacherGrade $teacher_grade,TeacherSubject $teacher_subject,GoodsServer $goods_server){
+    public function getSign(Request $req,TeacherSignLog $teacher_sign_log,TeacherExtend $teacher_extend,TeacherGrade $teacher_grade,TeacherSubject $teacher_subject,TeacherGg $teacher_gg){
         $time = date('Y-m-d');
         $userInfo = JWTAuth::parseToken()->touser();
-        $data['server'] = $goods_server->where('user_id',28)->first();
+        $data['server'] = $teacher_gg->where('user_id',28)->first();
         // $data['today'] = $teacher_sign_log->where(['user_id'=>$userInfo['id'],'format_time'=>$time])->exists();
         // $data['count'] = count($teacher_sign_log->select('id','format_time')->where(['user_id'=>$userInfo['id']])->groupBy('format_time')->get());
         $extend = $teacher_extend->where('user_id',$userInfo['id'])->first();
