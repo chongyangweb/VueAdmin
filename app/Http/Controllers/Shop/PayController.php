@@ -197,7 +197,7 @@ class PayController extends BaseController
 						$data = Pay::wechat()->scan($order);
 					}
 
-					// 手机端用微信跳转支付
+					// 手机端用游览器跳转支付
 					if($isMobile == 1){
 						$data = Pay::wechat()->wap($order);
 					}
@@ -207,6 +207,10 @@ class PayController extends BaseController
 						$data = Pay::wechat()->mp($order);
 					}
 
+					// App支付
+					if($isMobile == 2){
+						$data = Pay::wechat()->app($order);
+					}
 
 					# code...
 					break;

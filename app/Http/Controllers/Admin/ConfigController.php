@@ -14,7 +14,9 @@ class ConfigController extends BaseController
         $userInfo = JWTAuth::parseToken()->touser();
     	$type = $req->is_type;
     	
-    	$configData = $config->where('user_id',$userInfo['id'])->get();
+    	$configData = $config->where('user_id',0)->where('is_type',$type)->get();
+
+        $data = [];
 
     	foreach($configData as $v){
     		$data['data'][$v['name']] = $v;

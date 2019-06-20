@@ -22,8 +22,9 @@ class WechatController extends Controller
 
     // 掉起微信的授权
     public function getWechat(Request $req){
+        $configArr = $this->getConfigInfo();
     	$config = $this->getConfig();
-        $config['oauth']['callback'] = '/api/Admin/wechat/callback';
+        $config['oauth']['callback'] = configArr['callback'];
         $config['oauth']['scopes'] = ['snsapi_userinfo'];
 		$app = Factory::officialAccount($config);
 		$response = $app->oauth->redirect();
@@ -32,13 +33,14 @@ class WechatController extends Controller
 
     // 授权成功就得回调
     public function callback(Request $req){
+        $configArr = $this->getConfigInfo();
         $config = $this->getConfig();
         $app = Factory::officialAccount($config);
         $oauth = $app->oauth;
         $user = $oauth->user();
         $userWechat = $user->original;
         $openid = $this->wechatLogin($userWechat);
-        header('location:'. ''); // 跳转到 user/profile
+        header('location:'. $configArr['return_url']); // 跳转到 user/profile
     }
 
     // 微信登录  userWechat 为微信网页授权获取的信息
@@ -71,11 +73,7 @@ class WechatController extends Controller
 
     // 获取配置信息
     public function getConfig(){
-    	$config = new Config;
-    	$configInfo = $config->where('user_id',0)->where('is_type','wechat')->get();
-    	foreach($configInfo as $v){
-    		$configArr[$v['name']] = $v;
-    	}
+    	$configArr = $this->getConfigInfo();
 
     	$configs = [
 		    'app_id' => $configArr['app_id']['val'],
@@ -89,6 +87,16 @@ class WechatController extends Controller
 		];
 
 		return $configs;
+    }
+
+    // 获取数据库的配置信息
+    public function getConfigInfo(){
+        $config = new Config;
+        $configInfo = $config->where('user_id',0)->where('is_type','wechat')->get();
+        foreach($configInfo as $v){
+            $configArr[$v['name']] = $v;
+        }
+        return $configArr;
     }
 
     
