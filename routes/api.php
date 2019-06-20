@@ -227,6 +227,9 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/teacher_paper/question_add', 'TeacherPaperController@question_add');
 	Route::post('/teacher_paper/question_del', 'TeacherPaperController@question_del');
 
+	// 广告
+	Route::match(['get','post'],'/teacher_gg/index', 'TeacherGgController@index');
+
 
 
 });
