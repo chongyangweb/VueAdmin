@@ -159,6 +159,11 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/goods_comment/index', 'GoodsCommentController@index');
 	Route::post('/goods_comment/recGoodsComment', 'GoodsCommentController@recGoodsComment');
 
+	// 店铺信息
+	Route::match(['get','post'],'/goods_shop/edit', 'GoodsShopController@edit');
+	Route::match(['options','post'],'/goods_shop/avatar', 'GoodsShopController@avatar');
+	Route::match(['options','post'],'/goods_shop/shop_thumb', 'GoodsShopController@shop_thumb');
+
 	// 微信公众号
 	Route::match(['get','post'],'/wechat_cat/add', 'WechatCatController@add');
 	Route::post('/wechat_cat/del', 'WechatCatController@del');
