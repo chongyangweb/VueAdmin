@@ -108,6 +108,10 @@ Route::namespace('Admin')->prefix('Admin')->group(function(){
 	Route::post('/goods/index', 'GoodsController@index');
 	Route::match(['OPTIONS','post'],'/goods/thumb', 'GoodsController@thumb');
 
+	// 商品是否免单 是否上架
+	Route::post('/goods/onFree','GoodsController@onFree');
+	Route::post('/goods/onSale','GoodsController@onSale');
+
 	// 商品属性添加
 	Route::post('/goods_attr/add', 'GoodsAttrController@add');
 	Route::post('/goods_spec/add', 'GoodsSpecController@add');// SKU添加

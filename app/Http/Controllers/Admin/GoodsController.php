@@ -16,6 +16,14 @@ class GoodsController extends BaseController
 {
     public function index(Request $req,Goods $goods){
     	$this->where = empty($req->title)?[]:[['title','like','%'.$req->title.'%']];
+        if($req->is_sale!=''){
+            array_push($this->where,['is_sale',$req->is_sale]);
+        }
+        if($req->is_free!=''){
+            array_push($this->where,['is_free',$req->is_free]);
+        }
+
+
         $userInfo = JWTAuth::parseToken()->touser();
         array_push($this->where,['user_id',$userInfo['id']]);
         $data['data'] = $this->getData($goods);
@@ -121,5 +129,26 @@ class GoodsController extends BaseController
         $data['height'] = 800;
         $fileInfo = $uploads->uploads($data);
         return $fileInfo;
+    }
+
+
+    // 是否上架
+    public function onSale(Request $req,Goods $goods){
+        $id = $req->id;
+        $goodsInfo = $goods->find($id);
+        $data = [];
+        $data['is_sale'] = empty($goodsInfo['is_sale'])?'1':'0';
+        $rs = $goods->where('id',$id)->update($data);
+        return $this->returnData($rs);
+    }
+
+    // 是否免单产品
+    public function onFree(Request $req,Goods $goods){
+        $id = $req->id;
+        $goodsInfo = $goods->find($id);
+        $data = [];
+        $data['is_free'] = empty($goodsInfo['is_free'])?'1':'0';
+        $rs = $goods->where('id',$id)->update($data);
+        return $this->returnData($rs);
     }
 }
