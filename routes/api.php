@@ -353,3 +353,35 @@ Route::namespace('Edu')->prefix('Edu')->group(function(){
 	Route::post('/question/add_error_question', 'QuestionController@add_error_question'); // 正常题目
 
 });
+
+
+
+// 商品手机端Api
+Route::namespace('ShopApi')->prefix('ShopApi')->group(function(){
+
+	// 获取幻灯片
+	Route::get('/slide/get_slide', 'IndexController@get_slide'); 
+
+	// 获取免单产品
+	Route::post('/goods/get_free_goods', 'GoodsController@get_free_goods');
+
+	// 获取最新产品
+	Route::post('/goods/get_new_goods', 'GoodsController@get_new_goods');
+
+	// 获取单个产品信息
+	Route::post('/goods/get_goods_info', 'GoodsController@get_goods_info');
+
+	// 获取店铺列表
+	Route::post('/goods/get_shop', 'ShopController@get_shop');
+	Route::post('/goods/get_shop_info', 'ShopController@get_shop_info');
+
+	// 购物车
+	Route::post('/car/add_goods_car','CarController@add_goods_car'); 
+	Route::get('/car/get_goods_car','CarController@get_goods_car'); 
+	Route::get('/car/get_goods_car_list','CarController@get_goods_car_list'); 
+	Route::post('/car/edit_goods_car_num','CarController@edit_goods_car_num'); 
+	Route::post('/car/del_goods_car','CarController@del_goods_car'); 
+	Route::post('/car/del_goods_car_order','CarController@del_goods_car_order'); 
+
+});
+

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Order;
 use App\Model\OrderGoods;
+use App\Model\OrderMaster;
 use App\Model\GoodsComment;
 use App\Model\GoodsSpec;
 use App\Model\Goods;
@@ -14,7 +15,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class OrderController extends BaseController
 {
     // 添加订单
-    public function addOrder(Request $req,Order $order,OrderGoods $order_goods,GoodsSpec $goods_spec,Goods $goods){
+    public function addOrder(Request $req,Order $order,OrderGoods $order_goods,GoodsSpec $goods_spec,Goods $goods,OrderMaster $order_master){
     	if(!isset($req->token)){
             return ['code'=>500,'message'=>'无Token'];
         }
@@ -25,6 +26,11 @@ class OrderController extends BaseController
 
     	$goods_list = $req->goods_list;
     	$userInfo = JWTAuth::parseToken()->touser();
+
+        // Master_order 所有订单的价格
+        $master_price = 0;
+
+        // 分化处理每个订单 合并相同商户的商品组成订单
     	foreach($goods_list as $v){
     		$price = 0;
     		$price = $v['buy_num']*$v['price'];
@@ -37,19 +43,32 @@ class OrderController extends BaseController
     		
     		$goodsList[$v['goods_info']['user_id']]['total_price'] += $price;
     		$goodsList[$v['goods_info']['user_id']]['goods_list'][] = $v;
+            $master_price += $price;
     	}
+
+        
 
         // var_dump($goodsList);exit;
     	// $orderList = array_merge($orderList,[]);
     	// 订单开启事务防止出错
     	\DB::beginTransaction(); 
     	try {
+            // 主订单号 如果多个商户订单 则必须有一个主订单号
+            $order_master_id = 0;
+            if(count($goodsList)>1){
+                $orderMasterInfo['price'] = $master_price;
+                $orderMasterInfo['order_no'] = 'm'.date('YmdHis').mt_rand(1000,9999);
+                $orderMasterInfo['add_time'] = time();
+                $order_master_id = $order_master->insertGetId($orderMasterInfo);
+            }
+
             $orderList = []; // 循环获取到订单信息返回给前端展示
     		foreach($goodsList as $k=>$v){
                 $order_no = date('YmdHis').mt_rand(1000,9999);
                 $add_time = time();
     			$orderInfo = [];
     			$order_goods_list = [];
+                $orderInfo['master_id'] = $order_master_id;
 	    		$orderInfo['user_id'] = $userInfo['id'];
 	    		$orderInfo['dealer_id'] = $k;
 	    		$orderInfo['order_no'] = $order_no;

@@ -25,4 +25,9 @@ class Goods extends Model
     	return $this->hasMany('App\Model\GoodsAttr','goods_id','id');
     }
 
+    // 获取店铺信息
+    public function get_shop(){
+        return $this->hasOne('App\Model\GoodsShop','user_id','user_id');
+    }
+
 }
