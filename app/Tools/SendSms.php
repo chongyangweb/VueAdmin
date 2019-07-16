@@ -37,9 +37,9 @@ class SendSms extends Controller{
                     'file' => '/tmp/easy-sms.log',
                 ],
                 'aliyun' => [
-                    'access_key_id' => $configArr['app_id'],
-                    'access_key_secret' => $configArr['app_secret'],
-                    'sign_name' => $configArr['sign_name'],
+                    'access_key_id' => $configArr['app_id']['val'],
+                    'access_key_secret' => $configArr['app_secret']['val'],
+                    'sign_name' => $configArr['sign_name']['val'],
                 ],
                 //...
             ],
@@ -57,7 +57,7 @@ class SendSms extends Controller{
                 ],
             ], ['aliyun']);
         } catch (\Exception $e) {
-        	$returnData['code'=>500,'message'=>$e->getExceptions(),'data'=>''];
+        	$returnData = ['code'=>500,'message'=>$e->getExceptions(),'data'=>''];
             return $returnData;
         }
         

@@ -383,5 +383,10 @@ Route::namespace('ShopApi')->prefix('ShopApi')->group(function(){
 	Route::post('/car/del_goods_car','CarController@del_goods_car'); 
 	Route::post('/car/del_goods_car_order','CarController@del_goods_car_order'); 
 
+	// 用户登录注册
+	Route::post('/user/send_sms', 'UserController@send_sms');
+	Route::post('/user/login', 'UserController@login');
+	Route::match(['get','post'],'/user/register', 'UserController@register');
+
 });
 

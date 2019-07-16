@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use Intervention\Image\ImageManager;
+use App\Model\Setting;
+use App\Model\Congfig;
 
 class Uploads extends Controller{
 
@@ -130,8 +132,14 @@ class Uploads extends Controller{
         $realfile = $returnPath.'/'.$filename.'.'.$ext;
 
         // 判断是否使用OSS
-        if(!env("APP_OSS")){
+        $setting_model = new Setting;
+        $upload_setting = $setting_model->where(['name'=>'upload'])->find();
+        if($upload_setting['val'] == 'local'){
             $appUrl = env("APP_URL");
+        }else{
+            $config_model = new Config;
+            $config_alioss = $config_model->where(['is_type'=>'alioss'])->get();
+            $appUrl = '';
         }
 
         if(isset($is_thumb)){
